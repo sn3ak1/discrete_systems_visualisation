@@ -20,11 +20,26 @@ export function Canvas({ data }) {
     ctx.moveTo(x1 * 100, y1 * 100);
     ctx.lineTo(x2 * 100, y2 * 100);
     ctx.strokeStyle = "#000";
-    ctx.lineWidth = 10;
+    ctx.lineWidth = 5;
     ctx.stroke();
   };
 
   useEffect(() => {
+    ctx.beginPath();
+    ctx.arc(5, 5, 5, 0, 2 * Math.PI);
+    ctx.fillStyle = "#F00";
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(5, 3.77 * 100, 5, 0, 2 * Math.PI);
+    ctx.fillStyle = "#F00";
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(4.36 * 100, 3.77 * 100, 5, 0, 2 * Math.PI);
+    ctx.fillStyle = "#F00";
+    ctx.fill();
+
     for (let i = 1; i < data.length; i++) {
       draw(data[i - 1].x, data[i - 1].y, data[i].x, data[i].y);
     }

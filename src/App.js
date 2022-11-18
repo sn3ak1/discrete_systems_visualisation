@@ -77,7 +77,9 @@ async function readData() {
     return trilateration.calculate(meanPoint(point));
   });
 
-  return result.filter((doc) => doc.x > 0 && doc.y > 0);
+  return result.filter(
+    (doc) => doc.x > 0 && doc.y > 0 && doc.x < 4.36 && doc.y < 3.77
+  );
 }
 
 let meanPoint = (beaconData) => {
