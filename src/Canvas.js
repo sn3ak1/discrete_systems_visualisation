@@ -8,26 +8,30 @@ export function Canvas({ data }) {
   useEffect(() => {
     // dynamically assign the width and height to canvas
     const canvasEle = canvas.current;
-    canvasEle.width = 500;
-    canvasEle.height = 500;
+    canvasEle.width = 4.36 * 1000;
+    canvasEle.height = 3.77 * 1000;
 
     // get context of the canvas
     ctx = canvasEle.getContext("2d");
   }, []);
 
-  let draw = (x, y) => {
+  let draw = (x1, y1, x2, y2) => {
     ctx.beginPath();
-    ctx.lineTo(x, y);
+    ctx.moveTo(x1 * 100, y1 * 100);
+    ctx.lineTo(x2 * 100, y2 * 100);
     ctx.strokeStyle = "#000";
-    ctx.lineWidth = 5;
+    ctx.lineWidth = 10;
     ctx.stroke();
   };
 
   useEffect(() => {
-    ctx.moveTo(data[0].x, data[1].y);
-    data.forEach((point) => {
-      draw(point.x, point.y);
-    });
+    for (let i = 1; i < data.length; i++) {
+      draw(data[i - 1].x, data[i - 1].y, data[i].x, data[i].y);
+    }
+
+    // data.forEach((point) => {
+    //   draw(point.x, point.y);
+    // });
   }, []);
 
   return (

@@ -70,11 +70,14 @@ async function readData() {
     });
   });
 
+  console.log(points_sorted);
+
   let result = points_sorted.map((point) => {
+    // console.log(trilateration.calculate(meanPoint(point)));
     return trilateration.calculate(meanPoint(point));
   });
 
-  return result;
+  return result.filter((doc) => doc.x > 0 && doc.y > 0);
 }
 
 let meanPoint = (beaconData) => {
@@ -122,7 +125,10 @@ function App() {
 
   return (
     <div className="App">
-      <Canvas data={data.current}></Canvas>
+      <Canvas
+        style={{ width: "100%", heigth: "100%" }}
+        data={data.current}
+      ></Canvas>
     </div>
   );
 }
