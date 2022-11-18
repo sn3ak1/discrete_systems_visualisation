@@ -1,4 +1,7 @@
 import logo from "./logo.svg";
+
+import React, { useEffect, useRef } from "react";
+
 import "./App.css";
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
@@ -8,6 +11,8 @@ import { getFirestore } from "firebase/firestore";
 
 // Initialize Cloud Firestore and get a reference to the service
 import { collection, doc, setDoc, getDoc, getDocs } from "firebase/firestore";
+
+import { Canvas } from "./Canvas";
 
 var trilateration = require("node-trilateration");
 
@@ -42,16 +47,6 @@ async function readData() {
     array.push(doc.data());
   });
 
-  // let john = array.map((doc) => doc.data()["beaconId"] == "John");
-
-  //print out the array with beaconId property
-
-  //create arrays with different beaconID
-  let beacon1 = array.filter((doc) => doc.beaconID == "Gosia");
-  let beacon2 = array.filter((doc) => doc.beaconID == "John");
-  let beacon3 = array.filter((doc) => doc.beaconID == "Konrad");
-  // console.log(beacon2);
-
   let i = 1;
   let points = [];
 
@@ -75,21 +70,11 @@ async function readData() {
     });
   });
 
-  // console.log(points_sorted);
-
-  // console.log(points);
-
-  // console.log(meanPoint(points[0]));
-
-  // console.log(points2[0]);
-  // console.log(trilateration.calculate(meanPoint(points2[1])));
-
   let result = points_sorted.map((point) => {
-    // console.log(meanPoint(point));
     return trilateration.calculate(meanPoint(point));
   });
 
-  console.log(result);
+  return result;
 }
 
 let meanPoint = (beaconData) => {
@@ -122,10 +107,22 @@ let meanPoint = (beaconData) => {
 };
 
 function App() {
-  readData();
+  const [flag, setFlag] = React.useState(false);
+  const data = useRef();
+  readData().then((d) => {
+    data.current = d;
+    setFlag(true);
+  });
+
+  if (!flag) {
+    return <div>Loading...</div>;
+  }
+
+  console.log(data.current);
+
   return (
     <div className="App">
-      <canvas id="canvas" width="500" height="500"></canvas>
+      <Canvas data={data.current}></Canvas>
     </div>
   );
 }
