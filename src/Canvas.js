@@ -41,7 +41,7 @@ export function Canvas({ data }) {
     ctx.fill();
 
     for (let i = 1; i < data.length; i++) {
-      draw(data[i - 1].x, data[i - 1].y, data[i].x, data[i].y);
+      draw(data[i - 1][0], data[i - 1][1], data[i][0], data[i][1]);
     }
 
     // data.forEach((point) => {

@@ -6747,6 +6747,32 @@ mkdirp@~0.5.1:
   dependencies:
     minimist "^1.2.6"
 
+ml-array-utils@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/ml-array-utils/-/ml-array-utils-0.3.0.tgz#c0cc5afdc1cb051f5a83b1ce71641c243672f649"
+  integrity sha512-xufBoWJ7wB8BXIJWpjJb7gWQTFBA+KS+mrw80c+krLEQB2ApnilLL1NYKWt2ix/PKicd1xzPp8u4lRcnAWtNxg==
+  dependencies:
+    ml-stat "^1.0.1"
+
+ml-curve-fitting@^0.0.7:
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/ml-curve-fitting/-/ml-curve-fitting-0.0.7.tgz#1722b03f8c14c03f51c93d248a340cff2df73b2b"
+  integrity sha512-n/fC1hb9MKcJnvxY0JvXqr8dM9LKtT6ahtP6eYvp2ZWGMJWhAt8kxamprTnNdpBOzJlFYHW7CF6mYwGizigsdQ==
+  dependencies:
+    ml-matrix "^2.0.0"
+
+ml-matrix@^2.0.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/ml-matrix/-/ml-matrix-2.3.0.tgz#df4601670a6735068ee9a6dbf23c094c1d3ece29"
+  integrity sha512-Y7rqr19XsbkRSQiG35dfG2jm1loGSQ/0VfgGCcuQOXE4z5hiLRfiC+kLIVMqWwe78+YJOgIdZk0FND9LJT9N/Q==
+  dependencies:
+    ml-array-utils "^0.3.0"
+
+ml-stat@^1.0.1:
+  version "1.3.3"
+  resolved "https://registry.yarnpkg.com/ml-stat/-/ml-stat-1.3.3.tgz#8a5493b0f67382fbf705c260e070436655a7dcfa"
+  integrity sha512-F6plydFIKFZA+7j/pRsRrfRu4nwsruQvYD9QxHWc4hFUdASVznsKUL2hgAwgMVizY/P0+b1L9bVQexKES5y/uw==
+
 ms@2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.0.0.tgz#5608aeadfc00be6c2901df5f9861788de0d597c8"
@@ -9054,6 +9080,13 @@ tr46@~0.0.3:
   version "0.0.3"
   resolved "https://registry.yarnpkg.com/tr46/-/tr46-0.0.3.tgz#8184fd347dac9cdc185992f3a6622e14b9d9ab6a"
   integrity sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==
+
+trilat@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/trilat/-/trilat-1.0.0.tgz#77934459e1604c5bccbddb1c1880422eeb827c95"
+  integrity sha512-EDEjgLF0Qr9C6+GZr77wb3TbQL+cijr17AuEC4d0JRt0cp0oHtl7zqwTdFppbxPu6WNwjl+lgWTcg010ErFgCA==
+  dependencies:
+    ml-curve-fitting "^0.0.7"
 
 tryer@^1.0.1:
   version "1.0.1"

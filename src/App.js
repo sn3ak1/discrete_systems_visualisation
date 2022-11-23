@@ -15,6 +15,7 @@ import { collection, doc, setDoc, getDoc, getDocs } from "firebase/firestore";
 import { Canvas } from "./Canvas";
 
 var trilateration = require("node-trilateration");
+var trilat = require("trilat");
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -56,7 +57,7 @@ async function readData() {
     }
     points[i - 1].push(doc);
     if (
-      points[i - 1].map((doc) => doc.beaconID).filter(onlyUnique).length == 3
+      points[i - 1].map((doc) => doc.beaconID).filter(onlyUnique).length >= 3
     ) {
       i++;
     }
@@ -64,21 +65,33 @@ async function readData() {
 
   let points2 = points.filter((doc) => doc.length > 2);
 
+  // let last = points2[points2.length - 1];
+  // console.log(last);
+  // if (last.filter(onlyUnique).length < 3) {
+  points2.pop();
+  // }
+
+  // console.log(points2);
+
   let points_sorted = points2.map((point) => {
     return point.sort(function (a, b) {
       return a.x - b.x || a.y - b.y;
     });
   });
 
-  console.log(points_sorted);
+  // console.log(points_sorted);
 
   let result = points_sorted.map((point) => {
-    // console.log(trilateration.calculate(meanPoint(point)));
-    return trilateration.calculate(meanPoint(point));
+    // console.log(trilat(meanPoint(point)));
+    return trilat(meanPoint(point));
   });
 
+  // console.log(result);
+
+  // return result;
+
   return result.filter(
-    (doc) => doc.x > 0 && doc.y > 0 && doc.x < 4.36 && doc.y < 3.77
+    (doc) => doc[0] > 0 && doc[1] > 0 && doc[0] < 10 && doc[1] < 10
   );
 }
 
@@ -98,12 +111,19 @@ let meanPoint = (beaconData) => {
   let mean = [];
 
   p.forEach((beacon) => {
-    mean.push({
-      x: parseFloat(beacon[0].x),
-      y: parseFloat(beacon[0].y),
-      distance:
+    mean.push(
+      [
+        parseFloat(beacon[0].x),
+        parseFloat(beacon[0].y),
         beacon.reduce((total, next) => total + next.meters, 0) / beacon.length,
-    });
+      ]
+      //   {
+      //   x: parseFloat(beacon[0].x),
+      //   y: parseFloat(beacon[0].y),
+      //   distance:
+      //     beacon.reduce((total, next) => total + next.meters, 0) / beacon.length,
+      // }
+    );
   });
 
   return mean;
@@ -122,8 +142,6 @@ function App() {
   if (!flag) {
     return <div>Loading...</div>;
   }
-
-  console.log(data.current);
 
   return (
     <div className="App">
