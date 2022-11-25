@@ -23,13 +23,13 @@ var trilat = require("trilat");
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyDvMtOoYR1rdVxi4Fdmjvm7x64opzVeFAs",
-  authDomain: "ds02-6afa7.firebaseapp.com",
-  projectId: "ds02-6afa7",
-  storageBucket: "ds02-6afa7.appspot.com",
-  messagingSenderId: "906552624391",
-  appId: "1:906552624391:web:459c710bb8d169a6db31a2",
-  measurementId: "G-MXR6RLJJTQ",
+  apiKey: "AIzaSyBrzfiHgu_LZGq9qniVyxOp5rf7ZqQsOgA",
+  authDomain: "discretesystems-fbef2.firebaseapp.com",
+  projectId: "discretesystems-fbef2",
+  storageBucket: "discretesystems-fbef2.appspot.com",
+  messagingSenderId: "355100286047",
+  appId: "1:355100286047:web:e7a06fd14996ad7d730fea",
+  measurementId: "G-EJJVYYDEY5",
 };
 
 // Initialize Firebase
