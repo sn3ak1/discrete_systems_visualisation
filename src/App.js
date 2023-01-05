@@ -1,6 +1,6 @@
 import logo from "./logo.svg";
 
-import React, { useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 import "./App.css";
 // Import the functions you need from the SDKs you need
@@ -13,6 +13,10 @@ import { getFirestore } from "firebase/firestore";
 import { collection, doc, setDoc, getDoc, getDocs } from "firebase/firestore";
 
 import { Canvas } from "./Canvas";
+import MapWrapper from "./MapWrapper";
+
+// openlayers
+import GeoJSON from 'ol/format/GeoJSON'
 
 var trilateration = require("node-trilateration");
 var trilat = require("trilat");
@@ -120,21 +124,54 @@ let meanPoint = (beaconData) => {
 function App() {
   const [flag, setFlag] = React.useState(false);
   const data = useRef();
+  // set intial state
+  const [ features, setFeatures ] = useState([])
+  
   readData().then((d) => {
     data.current = d;
     setFlag(true);
   });
+
+  // initialization - retrieve GeoJSON features from Mock JSON API get features from mock 
+  //  GeoJson API (read from flat .json file in public directory)
+  useEffect( () => {
+
+    fetch('../public/mock-geojson-api.json')
+      .then(response => response.json())
+      .then( (fetchedFeatures) => {
+
+        // parse fetched geojson into OpenLayers features
+        //  use options to convert feature from EPSG:4326 to EPSG:3857
+        const wktOptions = {
+          dataProjection: 'EPSG:4326',
+          featureProjection: 'EPSG:3857'
+        }
+        const parsedFeatures = new GeoJSON().readFeatures(fetchedFeatures, wktOptions)
+
+        // set features into state (which will be passed into OpenLayers
+        //  map component as props)
+        setFeatures(parsedFeatures)
+
+      })
+
+  },[])
 
   if (!flag) {
     return <div>Loading...</div>;
   }
 
   return (
-    <div className="App">
-      <Canvas
-        style={{ width: "100%", heigth: "100%" }}
+    <div className="App" 
+      style={{ width: "100vw", heigth: "100vh" }}
+    >
+      {/* <Canvas
+        style={{ width: "50vw", heigth: "50vh" }}
         data={data.current}
-      ></Canvas>
+      ></Canvas> */}
+      <MapWrapper
+        features={features}
+        style={{width: "50vw", heigth: "50vh", minWidth: "1px", minHeight: "1px" }}
+      ></MapWrapper>
     </div>
   );
 }
