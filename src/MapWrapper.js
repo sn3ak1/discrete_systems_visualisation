@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
+import styled from "styled-components";
 
 import Map from 'ol/Map'
 import View from 'ol/View'
@@ -8,6 +9,14 @@ import VectorSource from 'ol/source/Vector'
 import XYZ from 'ol/source/XYZ'
 import {transform} from 'ol/proj'
 import {toStringXY} from 'ol/coordinate';
+
+const div = styled.div`
+  width: 300px;
+  height: 50px;
+
+  min-width: 1px;
+  min-heigth: 1px;
+`;
 
 function MapWrapper(props) {
 
@@ -97,7 +106,7 @@ function MapWrapper(props) {
     }
 
   },[props.features, featuresLayer, map])
-  
+
   return (
     <div ref={mapElement} className="map-container"></div>
   )

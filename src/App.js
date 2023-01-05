@@ -161,16 +161,12 @@ function App() {
   }
 
   return (
-    <div className="App" 
-      style={{ width: "100vw", heigth: "100vh" }}
-    >
+    <div className="App">
       {/* <Canvas
-        style={{ width: "50vw", heigth: "50vh" }}
         data={data.current}
       ></Canvas> */}
       <MapWrapper
         features={features}
-        style={{width: "50vw", heigth: "50vh", minWidth: "1px", minHeight: "1px" }}
       ></MapWrapper>
     </div>
   );
