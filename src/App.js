@@ -18,7 +18,6 @@ import MapWrapper from "./MapWrapper";
 // openlayers
 import GeoJSON from 'ol/format/GeoJSON'
 
-var trilateration = require("node-trilateration");
 var trilat = require("trilat");
 
 // TODO: Add SDKs for Firebase products that you want to use
