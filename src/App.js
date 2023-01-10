@@ -65,26 +65,28 @@ async function readData() {
 
 
   /**
-   * Get data from GPS devices for given timestamp and put it in arrayGps array.
+   * Get data from GPS devices for given timestamp and put it in local storage.
    */
-  const arrayGps = [];
   devicesGps.forEach(async (device) => {
     const docs = await getDocs(collection(db, `Devices/GPS/${device}`));
+    const a = [];
     docs.forEach((doc) => {
-      arrayGps.push(doc.data());
+      a.push(doc.data());
     });
+    localStorage.setItem("GPS", JSON.stringify(a));
   });
 
-  // console.log(arrayGps);
+  devicesBle.forEach(async (device) => {
+    const docs = await getDocs(collection(db, `Devices/Bluetooth/${device}`));
+    const a = [];
+    docs.forEach((doc) => {
+      a.push(doc.data());
+    });
+    localStorage.setItem("GPS", JSON.stringify(a));
+  });
 
 
-
-  const arrayBle = [];
-  // docBle.forEach((el) => {
-  //   arrayBle.push(el.data());
-  //   console.log(el.data());
-  // });
-
+  const arrayBle = JSON.parse(localStorage.getItem("GPS"));
 
   let i = 1;
   let points = [];
