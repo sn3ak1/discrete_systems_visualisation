@@ -6,6 +6,10 @@ body,
   height: 100%;
 }
 
+.map-container {
+  overflow: hidden;
+}
+
 .App {
   text-align: center;
 }
