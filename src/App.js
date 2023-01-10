@@ -7,19 +7,22 @@ import "./App.css";
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 
-import { getFirestore } from "firebase/firestore";
+import { getFirestore, getCollections } from "firebase/firestore";
 
 // Initialize Cloud Firestore and get a reference to the service
 import { collection, doc, setDoc, getDoc, getDocs } from "firebase/firestore";
+import { CookiesProvider, useCookies } from 'react-cookie';
 
 import { Canvas } from "./Canvas";
 import MapWrapper from "./MapWrapper";
+import { NavBar } from "./NavBar";
 
 // openlayers
 import GeoJSON from 'ol/format/GeoJSON'
 
 var trilateration = require("node-trilateration");
 var trilat = require("trilat");
+
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -46,16 +49,35 @@ function onlyUnique(value, index, self) {
 }
 
 async function readData() {
-  const querySnapshot = await getDocs(collection(db, "Oclean X"));
-  let array = [];
-  querySnapshot.forEach((doc) => {
-    array.push(doc.data());
-  });
+  // const querySnapshot = await getDocs(collection(db, "Devices"));
+  const docGps = await getDoc(doc(db, "Devices", "GPS"));
+  const docBle = await getDoc(doc(db, "Devices", "Bluetooth"));
+
+
+  // const arrayGps = [];
+  // docGps.forEach((el) => {
+  //   arrayGps.push(el.data());
+  //   console.log(el.data());
+  // });
+
+
+  // docGps.getCollections().then((collections) => {
+  //   collections.forEach((collection) => {
+  //     console.log(`Found subcollection with id: ${collection.id}`);
+  //   });
+  // });
+
+  const arrayBle = [];
+  // docBle.forEach((el) => {
+  //   arrayBle.push(el.data());
+  //   console.log(el.data());
+  // });
+
 
   let i = 1;
   let points = [];
 
-  array.forEach((doc) => {
+  arrayBle.forEach((doc) => {
     if (points.length < i) {
       points.push([]);
     }
@@ -125,8 +147,13 @@ function App() {
   const [flag, setFlag] = React.useState(false);
   const data = useRef();
   // set intial state
-  const [ features, setFeatures ] = useState([])
-  
+  const [features, setFeatures] = useState([]);
+  const [mapView, setMapView] = useState(true);
+
+  const changeViewClick = () => {
+    setMapView(!mapView);
+  }
+
   readData().then((d) => {
     data.current = d;
     setFlag(true);
@@ -134,11 +161,11 @@ function App() {
 
   // initialization - retrieve GeoJSON features from Mock JSON API get features from mock 
   //  GeoJson API (read from flat .json file in public directory)
-  useEffect( () => {
+  useEffect(() => {
 
     fetch('../public/mock-geojson-api.json')
       .then(response => response.json())
-      .then( (fetchedFeatures) => {
+      .then((fetchedFeatures) => {
 
         // parse fetched geojson into OpenLayers features
         //  use options to convert feature from EPSG:4326 to EPSG:3857
@@ -154,21 +181,30 @@ function App() {
 
       })
 
-  },[])
+  }, [])
 
   if (!flag) {
     return <div>Loading...</div>;
   }
 
   return (
-    <div className="App">
-      {/* <Canvas
-        data={data.current}
-      ></Canvas> */}
-      <MapWrapper
-        features={features}
-      ></MapWrapper>
-    </div>
+    <CookiesProvider>
+      <div className="App">
+        <NavBar changeViewHandler={changeViewClick} />
+
+
+        {!mapView && <Canvas
+          data={data.current}
+        ></Canvas>}
+
+        {mapView && <div style={{ height: '90vh' }}>
+          <MapWrapper
+            features={features}></MapWrapper>
+        </div>}
+
+      </div>
+    </CookiesProvider>
+
   );
 }
 

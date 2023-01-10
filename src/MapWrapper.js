@@ -7,8 +7,9 @@ import TileLayer from 'ol/layer/Tile'
 import VectorLayer from 'ol/layer/Vector'
 import VectorSource from 'ol/source/Vector'
 import XYZ from 'ol/source/XYZ'
-import {transform} from 'ol/proj'
-import {toStringXY} from 'ol/coordinate';
+import ol from 'ol'
+import { transform } from 'ol/proj'
+import { toStringXY } from 'ol/coordinate';
 
 const div = styled.div`
   width: 300px;
@@ -22,9 +23,9 @@ function MapWrapper(props) {
 
   // set intial state - used to track references to OpenLayers 
   //  objects for use in hooks, event handlers, etc.
-  const [ map, setMap ] = useState()
-  const [ featuresLayer, setFeaturesLayer ] = useState()
-  const [ selectedCoord, setSelectedCoord ] = useState()
+  const [map, setMap] = useState()
+  const [featuresLayer, setFeaturesLayer] = useState()
+  const [selectedCoord, setSelectedCoord] = useState()
 
   // get ref to div element - OpenLayers will render into this div
   const mapElement = useRef()
@@ -34,7 +35,7 @@ function MapWrapper(props) {
 
   // map click handler
   const handleMapClick = (event) => {
-    
+
     // get clicked coordinate using mapRef to access current React state inside OpenLayers callback
     //  https://stackoverflow.com/a/60643670
     const clickedCoord = mapRef.current.getCoordinateFromPixel(event.pixel);
@@ -43,12 +44,12 @@ function MapWrapper(props) {
     const transormedCoord = transform(clickedCoord, 'EPSG:3857', 'EPSG:4326')
 
     // set React state
-    setSelectedCoord( transormedCoord )
-    
+    setSelectedCoord(transormedCoord)
+
   }
 
   // initialize map on first render - logic formerly put into componentDidMount
-  useEffect( () => {
+  useEffect(() => {
 
     // create and add vector source layer
     const initalFeaturesLayer = new VectorLayer({
@@ -59,7 +60,7 @@ function MapWrapper(props) {
     const initialMap = new Map({
       target: mapElement.current,
       layers: [
-        
+
         // USGS Topo
         new TileLayer({
           source: new XYZ({
@@ -68,7 +69,7 @@ function MapWrapper(props) {
         }),
 
         initalFeaturesLayer
-        
+
       ],
       view: new View({
         projection: 'EPSG:3857',
@@ -84,10 +85,10 @@ function MapWrapper(props) {
 
     // register map on click callback 
     initialMap.on('click', handleMapClick)
-  },[])
+  }, [])
 
   // update map if features prop changes - logic formerly put into componentDidUpdate
-  useEffect( () => {
+  useEffect(() => {
 
     if (props.features.length) { // may be empty on first render
 
@@ -100,12 +101,12 @@ function MapWrapper(props) {
 
       // fit map to feature extent (with 100px of padding)
       map.getView().fit(featuresLayer.getSource().getExtent(), {
-        padding: [100,100,100,100]
+        padding: [100, 100, 100, 100]
       })
 
     }
 
-  },[props.features, featuresLayer, map])
+  }, [props.features, featuresLayer, map])
 
   return (
     <div ref={mapElement} className="map-container"></div>
