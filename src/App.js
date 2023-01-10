@@ -47,24 +47,37 @@ function onlyUnique(value, index, self) {
   return self.indexOf(value) === index;
 }
 
+
+// TODO change
+let devicesGps;
+
 async function readData() {
   // const querySnapshot = await getDocs(collection(db, "Devices"));
   const docGps = await getDoc(doc(db, "Devices", "GPS"));
   const docBle = await getDoc(doc(db, "Devices", "Bluetooth"));
 
+  devicesGps = docGps.get("devices");
+  const devicesBle = docBle.get("devices");
 
-  // const arrayGps = [];
-  // docGps.forEach((el) => {
-  //   arrayGps.push(el.data());
-  //   console.log(el.data());
-  // });
+  // console.log(devicesGps);
+
+  localStorage.setItem("devicesGps", JSON.stringify(devicesGps));
 
 
-  // docGps.getCollections().then((collections) => {
-  //   collections.forEach((collection) => {
-  //     console.log(`Found subcollection with id: ${collection.id}`);
-  //   });
-  // });
+  /**
+   * Get data from GPS devices for given timestamp and put it in arrayGps array.
+   */
+  const arrayGps = [];
+  devicesGps.forEach(async (device) => {
+    const docs = await getDocs(collection(db, `Devices/GPS/${device}`));
+    docs.forEach((doc) => {
+      arrayGps.push(doc.data());
+    });
+  });
+
+  // console.log(arrayGps);
+
+
 
   const arrayBle = [];
   // docBle.forEach((el) => {
@@ -189,7 +202,7 @@ function App() {
   return (
     <CookiesProvider>
       <div className="App">
-        <NavBar changeViewHandler={changeViewClick} />
+        <NavBar changeViewHandler={changeViewClick} devices={devicesGps} />
 
 
         {!mapView && <Canvas
