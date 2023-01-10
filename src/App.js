@@ -20,7 +20,6 @@ import { NavBar } from "./NavBar";
 // openlayers
 import GeoJSON from 'ol/format/GeoJSON'
 
-var trilateration = require("node-trilateration");
 var trilat = require("trilat");
 
 
