@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 
-export function NavBar({ changeViewHandler, devices }) {
+export function NavBar({ changeViewHandler, devices, refreshDataHandler }) {
 
     return (
         <div style={{ height: '10vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -14,6 +14,10 @@ export function NavBar({ changeViewHandler, devices }) {
 
             <button onClick={changeViewHandler}>
                 Change view
+            </button>
+
+            <button onClick={refreshDataHandler}>
+                Refresh data
             </button>
         </div>
     );
