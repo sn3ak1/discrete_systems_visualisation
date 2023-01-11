@@ -161,9 +161,24 @@ function App() {
   // initialization - retrieve GeoJSON features from Mock JSON API get features from mock 
   //  GeoJson API (read from flat .json file in public directory)
   useEffect(() => {
-
-    fetch('../public/mock-geojson-api.json')
-      .then(response => response.json())
+    let dummy_json = {
+      "type": "LineString",
+      "coordinates": [
+          [
+              -122.60315,
+              37.905639,
+              449.2
+          ],
+          [
+              -122.603155,
+              37.905601,
+              449.4
+          ],
+      ]
+    };
+    const fetchData = async () => { 
+      await fetch('./mock-geojson-api.json')
+      .then(response => { response.json(); console.log("dfkbwidfb")})
       .then((fetchedFeatures) => {
 
         // parse fetched geojson into OpenLayers features
@@ -172,20 +187,22 @@ function App() {
           dataProjection: 'EPSG:4326',
           featureProjection: 'EPSG:3857'
         }
-        const parsedFeatures = new GeoJSON().readFeatures(fetchedFeatures, wktOptions)
+        const parsedFeatures = new GeoJSON().readFeatures(dummy_json, wktOptions)
 
         // set features into state (which will be passed into OpenLayers
         //  map component as props)
         setFeatures(parsedFeatures)
-
-      })
-
+        console.log("Fetched features!", parsedFeatures)
+      });
+    }
+    fetchData();
   }, [])
 
   if (!flag) {
     return <div>Loading...</div>;
   }
 
+  console.log("Features passed to map: ", features);
   return (
     <CookiesProvider>
       <div className="App">

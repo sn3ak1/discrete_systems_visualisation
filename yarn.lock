@@ -8239,6 +8239,11 @@ obuf@^1.0.0, obuf@^1.1.2:
   resolved "https://registry.npmjs.org/obuf/-/obuf-1.1.2.tgz"
   integrity sha512-PX1wu0AmAdPqOL1mWhqmlOd8kOIZQwGZw6rh7uby9fTc5lhaOWFLX3I6R1hrF9k3zUY40e6igsLGkDXK92LJNg==
 
+ol-layerswitcher@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/ol-layerswitcher/-/ol-layerswitcher-4.1.0.tgz#34a96652027f8c5f807b73f65520b156c86851ee"
+  integrity sha512-Nzvi1JF+dkD8laL/EdC8dg0/WQBscAGNaQApsoiE2EfVuaBwLpBg8yrABsFSJF388bAFq0oYjBR61ZPNTWRI8g==
+
 ol-mapbox-style@^9.2.0:
   version "9.4.0"
   resolved "https://registry.npmjs.org/ol-mapbox-style/-/ol-mapbox-style-9.4.0.tgz"
