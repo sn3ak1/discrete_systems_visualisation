@@ -92,16 +92,17 @@ function App() {
   }
 
   return (
-    console.log(bleData.current),
+    console.log(selectedDevice),
     <div className="App">
       <NavBar
         changeViewHandler={() => setMapView(!mapView)}
         refreshDataHandler={() => setRefreshData(true)}
+        deviceChangeHandler={(e) => setSelectedDevice(e.target.value)}
         devices={bleDevices.current} />
 
       {!mapView &&
         <Ble
-          data={bleData?.current[selectedDevice]}>
+          data={bleData.current[selectedDevice]}>
         </Ble>}
 
       {mapView &&
