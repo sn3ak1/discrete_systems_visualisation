@@ -17,7 +17,7 @@ export function Canvas({ data }) {
     canvas.current.height = 1000;
 
     rainbow.setNumberRange(0, data.length);
-    rainbow.setSpectrum('red', 'green');
+    rainbow.setSpectrum('blue', 'red');
   }, []);
 
   useEffect(() => {
