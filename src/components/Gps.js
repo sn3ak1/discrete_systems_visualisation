@@ -1,29 +1,29 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import MapWrapper from "./MapWrapper";
 import GeoJSON from 'ol/format/GeoJSON'
 
 
 function Gps({ data }) {
-    const dataProcessed = useRef(dataToFeatures(data));
+    const [dataProcessed, setDataProccesed] = useState();
+    // define time threshold
+    const [timeThreshold, setTimeThreshold] = useState(3000);
     useEffect(()=>{
-        dataProcessed.current = dataToFeatures(data);
+        setDataProccesed(dataToFeatures(data, timeThreshold));
     },[data])
 
-    return (
+    return (<>
+        {dataProcessed &&
         <MapWrapper
-            features={ dataProcessed.current }>
-        </MapWrapper>
+            features={ dataProcessed }>
+        </MapWrapper>}</>
     );
 }
 
-function dataToFeatures(data) {
-    // define time threshold
-    const timeThreshold =  3000
-
+function dataToFeatures(data, timeThreshold) {
     // make sure data is not undefined
-    // if (data == undefined) {
-    //     data = []
-    // }
+    if (data == undefined) {
+        data = []
+    }
 
     // sort data by time ascending
     data.sort(function(gpsData1, gpsData2){return gpsData1.time - gpsData2.time});
@@ -78,7 +78,7 @@ function dataToFeatures(data) {
         "type": "FeatureCollection",
         "features": features
     }, wktOptions)
-    // console.log("Parsed Features from data: ", parsedFeatures)
+    console.log("Parsed Features from data: ", parsedFeatures)
     return parsedFeatures
 }
 

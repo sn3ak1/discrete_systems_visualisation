@@ -22,10 +22,10 @@ function App() {
   const [selectedDevice, setSelectedDevice] = useState();
   const [refreshData, setRefreshData] = useState(false);
 
-  const bleDevices = useRef();
-  const gpsDevices = useRef();
-  const bleData = useRef();
-  const gpsData = useRef();
+  const [bleDevices, setBleDevices] = useState();
+  const [gpsDevices, setGpsDevices] = useState();
+  const [bleData, setBleData] = useState();
+  const [gpsData, setGpsData] = useState();
 
 
   // set intial state
@@ -34,26 +34,30 @@ function App() {
 
   useEffect(() => {
     if (isDataFetched() && !refreshData) {
-      bleDevices.current = getBleDevicesNames();
-      gpsDevices.current = getGpsDevicesNames();
-      bleData.current = getBleData();
-      gpsData.current = getGpsData();
+      const gpsDevices = getGpsDevicesNames();
+      setBleDevices(getBleDevicesNames());
+      setGpsDevices(gpsDevices);
+      setBleData(getBleData());
+      setGpsData(getGpsData());
+
       setFlag(true);
-      setSelectedDevice(bleDevices.current[0]);
+      setSelectedDevice(gpsDevices[0]);
     } else {
       fetchBleDevicesNames()
         .then((devices) => {
-          bleDevices.current = devices;
+          setBleDevices(devices);
+          return devices;
         })
-        .then(() => { fetchBleData(bleDevices.current).then((data) => bleData.current = data) });
+        .then((devices) => { fetchBleData(devices).then((data) => setBleData(data)) });
       fetchGpsDevicesNames()
         .then((devices) => {
-          gpsDevices.current = devices;
+          setGpsDevices(devices)
+          return devices;
         })
-        .then(() => { fetchGpsData(gpsDevices.current).then((data) => gpsData.current = data) })
+        .then((devices) => { fetchGpsData(devices).then((data) => setGpsData(data)) })
         .then(() => {
           setFlag(true);
-          setSelectedDevice(bleDevices.current[0]);
+          setSelectedDevice(bleDevices[0]);
         });
       setRefreshData(false);
     }
@@ -64,22 +68,22 @@ function App() {
   }
 
   return (
+    console.log('render',gpsData),
     <div className="App">
       <NavBar
         changeViewHandler={() => setMapView(!mapView)}
         refreshDataHandler={() => setRefreshData(true)}
         deviceChangeHandler={(e) => setSelectedDevice(e.target.value)}
-        devices={gpsDevices.current} />
+        devices={gpsDevices} />
 
       {!mapView &&
         <Ble
-          data={bleData.current[selectedDevice]}>
-        </Ble>
-      }
+          data={bleData[selectedDevice]}>
+        </Ble>}
 
       {mapView &&
         <Gps
-          data={gpsData.current[selectedDevice]}>
+          data={gpsData[selectedDevice]}>
         </Gps>
       }
     </div>
