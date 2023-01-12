@@ -26,37 +26,27 @@ import GeoJSON from 'ol/format/GeoJSON'
 
 
 function MapWrapper(props) {
+  const [featuresLayer, setFeaturesLayer] = useState()
+  const [map, setMap] = useState()
+  const [selectedCoord, setSelectedCoord] = useState()
+
+  const mapRef = useRef()
+  mapRef.current = map
   // get ref to div element - OpenLayers will render into this div
   const mapElement = useRef()
 
   // set intial state - used to track references to OpenLayers 
   //  objects for use in hooks, event handlers, etc.
-
-  const pointData = {
-    "type": "FeatureCollection",
-    "features": [
-      {
-        "type": "Feature",
-        "properties": {},
-        "geometry": {
-          "coordinates": [
-            19.903450105200477,
-            50.06022410961597
-          ],
-          "type": "Point"
-        }
-      }
-    ]
-  }
   
   function gpsTraceLineStyleFunction(f) {
     return new FlowLine({
       visible: false,
         lineCap: 'round',
-        color: (f, step) => [255, 0, 0],
-        width: 10,
+        color: (f, step) => {
+          return [255*step, 64*step, 255-255*step]
+        },
+        width: 5,
         geometry: function (f) {
-          console.log("Creating geometry from: ", f)
           if (f.getGeometry().getType() === 'MultiLineString') {
             return f.getGeometry().getLineString(0);
           } else {
@@ -64,84 +54,7 @@ function MapWrapper(props) {
           }
         }
     });
-  } 
-
-  const initalFeaturesLayer = new VectorLayer({
-    visible: true,
-    title: "Features Layer",
-    source: new VectorSource({
-        projection: 'EPSG:3857',
-        features: new GeoJSON().readFeatures(pointData, {
-          dataProjection: 'EPSG:4326',
-          featureProjection: 'EPSG:3857',
-        }),
-        format: new GeoJSON(),
-    }),
-    // style: new Style({
-    //   stroke: new Stroke({
-    //     color: [255, 0, 0], // red
-    //     width: 10,
-    //     lineDash: [4, 4, 4],
-    //     lineCap: "butt"
-    //   })
-    // })
-  })
-
-  const osm = new TileLayer({
-    title: 'OSM',
-    type: 'base',
-    visible: true,
-    source: new OSM()
-  });
-
-  const watercolor = new TileLayer({
-    title: 'Water color',
-    type: 'base',
-    visible: false,
-    source: new SourceStamen({
-      layer: 'watercolor'
-    })
-  });
-
-
-  // create map
-  const initialMap = new Map({
-    target: mapElement.current,
-    layers: [
-      osm, watercolor, initalFeaturesLayer
-    ],
-    view: new View({
-      projection: 'EPSG:3857',
-      center: [
-        2215611.6621747324, 6456785.470482525
-      ],
-      zoom: 16
-    }),
-    controls: defaultControls().extend([
-      new ZoomToExtent({
-        extent: [
-          2215611.6621747324, 6456785.470482525
-        ],
-      }),
-      new OverviewMap({
-        layers: [
-          new TileLayer({
-            title: 'Open Street Map',            
-            type: 'base',
-            source: new OSM(),
-          }),
-        ],
-      }),
-      new LayerSwitcherImage()
-    ]),
-  })
-
-  const [featuresLayer, setFeaturesLayer] = useState(initalFeaturesLayer)
-  const [map, setMap] = useState(initialMap)
-  const [selectedCoord, setSelectedCoord] = useState()
-
-  const mapRef = useRef()
-  mapRef.current = map
+  }
 
   // map click handler
   const handleMapClick = (event) => {
@@ -161,18 +74,84 @@ function MapWrapper(props) {
   useEffect(() => {
     console.log("Running MapWraper initialization")
 
-    // map.addLayer(featuresLayer)
+    const initalFeaturesLayer = new VectorLayer({
+      visible: true,
+      title: "Features Layer",
+      source: new VectorSource({
+          projection: 'EPSG:3857',          
+          format: new GeoJSON(),
+      }),
+      style: gpsTraceLineStyleFunction
+    })
+  
+    const osm = new TileLayer({
+      title: 'OSM',
+      type: 'base',
+      visible: true,
+      source: new OSM()
+    });
+  
+    const watercolor = new TileLayer({
+      title: 'Water color',
+      type: 'base',
+      visible: false,
+      source: new SourceStamen({
+        layer: 'watercolor'
+      })
+    });
+  
+    // create map
+    const initialMap = new Map({
+      target: mapElement.current,
+      layers: [
+        osm, watercolor, initalFeaturesLayer
+      ],
+      view: new View({
+        projection: 'EPSG:3857',
+        center: transform(
+          [
+            0,0
+          ],
+          'EPSG:4326',
+          'EPSG:3857'
+        ),
+        zoom: 16
+      }),
+      controls: defaultControls().extend([
+        new ZoomToExtent({
+          extent: [
+            0, 0
+          ],
+        }),
+        new OverviewMap({
+          layers: [
+            new TileLayer({
+              title: 'Open Street Map',            
+              type: 'base',
+              source: new OSM(),
+            }),
+          ],
+        }),
+        new LayerSwitcherImage()
+      ]),
+    })
+
     // register map on click callback 
-    map.on('click', handleMapClick)
+    initialMap.on('click', handleMapClick)
+
+
+    setMap(initialMap)
+    setFeaturesLayer(initalFeaturesLayer)
   }, [])
 
   // update map if features prop changes - logic formerly put into componentDidUpdate
   useEffect(() => {
-
-    if (props.features.length) { // may be empty on first render
+    if (props.features.length && featuresLayer != undefined && map != undefined) { // may be empty on first render
       
-      console.log("Map received features: ", props.features[0].getGeometry());
-
+      let line = props.features[props.features.length-1].getGeometry()
+      const newZoomPoint = line.flatCoordinates.splice(line.flatCoordinates.length - line.stride, line.flatCoordinates.length)
+      console.log("Map received features: ", props.features);
+      console.log("Last point in line: ", newZoomPoint)
 
       // set features to map
       featuresLayer.setSource(
@@ -183,10 +162,15 @@ function MapWrapper(props) {
         })
       )
 
-      console.log("PROOF! Newly set features: ", featuresLayer.getSource().getFeatures())
+      // set new map center
+      map.getView().setCenter(transform(
+        newZoomPoint,
+        'EPSG:3857', // 'EPSG:4326',
+        'EPSG:3857'
+      ),)
     }
 
-  }, [props.features])
+  }, [props.features, featuresLayer, map])
 
   return (
     <div ref={mapElement} className="map-container"></div>
