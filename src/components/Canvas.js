@@ -8,8 +8,8 @@ export function Canvas({ data }) {
   useEffect(() => {
     // dynamically assign the width and height to canvas
     const canvasEle = canvas.current;
-    canvasEle.width = 4.36 * 1000;
-    canvasEle.height = 3.77 * 1000;
+    // canvasEle.width = 4.36 * 1000;
+    // canvasEle.height = 3.77 * 1000;
 
     // get context of the canvas
     ctx = canvasEle.getContext("2d");
