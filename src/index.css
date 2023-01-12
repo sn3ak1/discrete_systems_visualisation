@@ -1,4 +1,6 @@
 @import "../node_modules/ol/ol.css";
+@import "../node_modules/ol-ext/dist/ol-ext.css";
+
 
 body {
   margin: 0;

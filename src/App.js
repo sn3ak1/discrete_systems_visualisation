@@ -65,9 +65,9 @@ function App() {
   // initialization - retrieve GeoJSON features from Mock JSON API get features from mock 
   //  GeoJson API (read from flat .json file in public directory)
   useEffect(() => {
-
-    fetch('../public/mock-geojson-api.json')
-      .then(response => response.json())
+    const fetchData = async () => { 
+      await fetch('./mock-geojson-api.json')
+      .then(response => response.json() )
       .then((fetchedFeatures) => {
 
         // parse fetched geojson into OpenLayers features
@@ -81,15 +81,17 @@ function App() {
         // set features into state (which will be passed into OpenLayers
         //  map component as props)
         setFeatures(parsedFeatures)
-
-      })
-
+        console.log("Fetched features!", parsedFeatures)
+      });
+    }
+    fetchData();
   }, [])
 
   if (!flag) {
     return <div>Loading...</div>;
   }
 
+  console.log("Features passed to map: ", features);
   return (
     <div className="App">
       <NavBar
