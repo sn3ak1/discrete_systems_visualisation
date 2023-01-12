@@ -7,24 +7,23 @@ import TileLayer from 'ol/layer/Tile'
 import LayerGroup from 'ol/layer/Group';
 import VectorLayer from 'ol/layer/Vector'
 import VectorSource from 'ol/source/Vector'
+import VectorImage from 'ol/layer/VectorImage'
+
 import XYZ from 'ol/source/XYZ'
 import OSM from 'ol/source/OSM.js'
 import SourceStamen from 'ol/source/Stamen';
 import { transform } from 'ol/proj'
 import { toStringXY } from 'ol/coordinate';
-import { forOfStatement } from '@babel/types';
+import { forOfStatement, tryStatement } from '@babel/types';
 import {OverviewMap, ZoomToExtent, defaults as defaultControls} from 'ol/control.js';
 
-import LayerSwitcher from 'ol-layerswitcher';
-import { BaseLayerOptions, GroupLayerOptions } from 'ol-layerswitcher';
+import LayerSwitcherImage from 'ol-ext/control/LayerSwitcherImage'
 
-const div = styled.div`
-  width: 300px;
-  height: 50px;
+import Style from 'ol/style/Style';
+import Stroke from 'ol/style/Stroke';
+import FlowLine from 'ol-ext/style/FlowLine'
+import GeoJSON from 'ol/format/GeoJSON'
 
-  min-width: 1px;
-  min-heigth: 1px;
-`;
 
 function MapWrapper(props) {
   // get ref to div element - OpenLayers will render into this div
@@ -33,8 +32,59 @@ function MapWrapper(props) {
   // set intial state - used to track references to OpenLayers 
   //  objects for use in hooks, event handlers, etc.
 
+  const pointData = {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "properties": {},
+        "geometry": {
+          "coordinates": [
+            19.903450105200477,
+            50.06022410961597
+          ],
+          "type": "Point"
+        }
+      }
+    ]
+  }
+  
+  function gpsTraceLineStyleFunction(f) {
+    return new FlowLine({
+      visible: false,
+        lineCap: 'round',
+        color: (f, step) => [255, 0, 0],
+        width: 10,
+        geometry: function (f) {
+          console.log("Creating geometry from: ", f)
+          if (f.getGeometry().getType() === 'MultiLineString') {
+            return f.getGeometry().getLineString(0);
+          } else {
+            return f.getGeometry();
+          }
+        }
+    });
+  } 
+
   const initalFeaturesLayer = new VectorLayer({
-    source: new VectorSource()
+    visible: true,
+    title: "Features Layer",
+    source: new VectorSource({
+        projection: 'EPSG:3857',
+        features: new GeoJSON().readFeatures(pointData, {
+          dataProjection: 'EPSG:4326',
+          featureProjection: 'EPSG:3857',
+        }),
+        format: new GeoJSON(),
+    }),
+    // style: new Style({
+    //   stroke: new Stroke({
+    //     color: [255, 0, 0], // red
+    //     width: 10,
+    //     lineDash: [4, 4, 4],
+    //     lineCap: "butt"
+    //   })
+    // })
   })
 
   const osm = new TileLayer({
@@ -53,31 +103,24 @@ function MapWrapper(props) {
     })
   });
 
-  const baseMaps = new LayerGroup({
-    title: 'Base maps',
-    layers: [osm, watercolor]
-  });
 
   // create map
   const initialMap = new Map({
     target: mapElement.current,
     layers: [
-      baseMaps
+      osm, watercolor, initalFeaturesLayer
     ],
     view: new View({
       projection: 'EPSG:3857',
       center: [
-        // 50.0585, 
-        2265237.640645714, //19.9342
-        5572486.729875085
+        2215611.6621747324, 6456785.470482525
       ],
-      zoom: 15
+      zoom: 16
     }),
     controls: defaultControls().extend([
       new ZoomToExtent({
         extent: [
-          2265237.640645714,
-          5572486.729875085
+          2215611.6621747324, 6456785.470482525
         ],
       }),
       new OverviewMap({
@@ -89,14 +132,10 @@ function MapWrapper(props) {
           }),
         ],
       }),
-      new LayerSwitcher({
-        reverse: false,
-        groupSelectStyle: 'group'
-      })
+      new LayerSwitcherImage()
     ]),
   })
 
-  
   const [featuresLayer, setFeaturesLayer] = useState(initalFeaturesLayer)
   const [map, setMap] = useState(initialMap)
   const [selectedCoord, setSelectedCoord] = useState()
@@ -112,7 +151,7 @@ function MapWrapper(props) {
     const clickedCoord = mapRef.current.getCoordinateFromPixel(event.pixel);
 
     // transform coord to EPSG 4326 standard Lat Long
-    const transormedCoord = transform(clickedCoord, 'EPSG:3857', 'EPSG:4326')
+    const transormedCoord = clickedCoord
 
     // set React state
     setSelectedCoord(transormedCoord)
@@ -122,6 +161,7 @@ function MapWrapper(props) {
   useEffect(() => {
     console.log("Running MapWraper initialization")
 
+    // map.addLayer(featuresLayer)
     // register map on click callback 
     map.on('click', handleMapClick)
   }, [])
@@ -130,25 +170,23 @@ function MapWrapper(props) {
   useEffect(() => {
 
     if (props.features.length) { // may be empty on first render
+      
+      console.log("Map received features: ", props.features[0].getGeometry());
 
-      console.log("Map received features: ", props.features);
-      console.log("FeaturesLayer", featuresLayer)
-      console.log("Map", map)
+
       // set features to map
       featuresLayer.setSource(
         new VectorSource({
-          features: props.features // make sure features is an array
+          projection: 'EPSG:3857',
+          features: props.features,
+          format: new GeoJSON()
         })
       )
 
-      // fit map to feature extent (with 100px of padding)
-      map.getView().fit(featuresLayer.getSource().getExtent(), {
-        padding: [100, 100, 100, 100]
-      })
-
+      console.log("PROOF! Newly set features: ", featuresLayer.getSource().getFeatures())
     }
 
-  }, [props.features, featuresLayer, map])
+  }, [props.features])
 
   return (
     <div ref={mapElement} className="map-container"></div>

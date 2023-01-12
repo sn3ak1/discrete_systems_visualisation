@@ -8243,6 +8243,10 @@ ol-layerswitcher@^4.1.0:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/ol-layerswitcher/-/ol-layerswitcher-4.1.0.tgz#34a96652027f8c5f807b73f65520b156c86851ee"
   integrity sha512-Nzvi1JF+dkD8laL/EdC8dg0/WQBscAGNaQApsoiE2EfVuaBwLpBg8yrABsFSJF388bAFq0oYjBR61ZPNTWRI8g==
+ol-ext@^4.0.4:
+  version "4.0.4"
+  resolved "https://registry.yarnpkg.com/ol-ext/-/ol-ext-4.0.4.tgz#1474253d60c48378f0e7753e3e382835fd2cb21f"
+  integrity sha512-VMSsBc/vuWgMvk2U8qUNLN0kKjsuPowISmqmMB9Bs8PfyHBNBKCUgMkYOVzO2cX5EQOdVkkcsa0N/Oln5L0oYA==
 
 ol-mapbox-style@^9.2.0:
   version "9.4.0"
@@ -8254,7 +8258,7 @@ ol-mapbox-style@^9.2.0:
 
 ol@^7.2.2:
   version "7.2.2"
-  resolved "https://registry.npmjs.org/ol/-/ol-7.2.2.tgz"
+  resolved "https://registry.yarnpkg.com/ol/-/ol-7.2.2.tgz#d675a1525fd995a29a70a9a9fa9c3a9bc827aa39"
   integrity sha512-eqJ1hhVQQ3Ap4OhYq9DRu5pz9RMpLhmoTauDoIqpn7logVi1AJE+lXjEHrPrTSuZYjtFbMgqr07sxoLNR65nrw==
   dependencies:
     earcut "^2.2.3"
