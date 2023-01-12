@@ -32,7 +32,6 @@ export async function fetchBleDevicesNames() {
 
 async function getData(deviceType, devices) {
     const data = {};
-    console.log('dupaa')
     for (let device of devices) {
         const docs = await getDocs(collection(db, `Devices/${deviceType}/${device}`));
         const timestamps = [];
@@ -48,11 +47,13 @@ async function getData(deviceType, devices) {
 export async function fetchBleData(devices) {
     const data = await getData("Bluetooth", devices);
     localStorage.setItem("BLE", JSON.stringify(data));
+    return data;
 }
 
 export async function fetchGpsData(devices) {
     const data = await getData("GPS", devices);
     localStorage.setItem("GPS", JSON.stringify(data));
+    return data;
 }
 
 export function getGpsDevicesNames() {

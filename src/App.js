@@ -44,7 +44,6 @@ function App() {
     } else {
       fetchBleDevicesNames()
         .then((devices) => {
-          console.log(devices);
           bleDevices.current = devices;
         })
         .then(() => { fetchBleData(bleDevices.current).then((data) => bleData.current = data) });
@@ -92,7 +91,6 @@ function App() {
   }
 
   return (
-    console.log(selectedDevice),
     <div className="App">
       <NavBar
         changeViewHandler={() => setMapView(!mapView)}
