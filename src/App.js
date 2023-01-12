@@ -3,160 +3,64 @@ import logo from "./logo.svg";
 import React, { useState, useEffect, useRef } from "react";
 
 import "./App.css";
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
 
-import { getFirestore, getCollections } from "firebase/firestore";
-
-// Initialize Cloud Firestore and get a reference to the service
-import { collection, doc, setDoc, getDoc, getDocs } from "firebase/firestore";
-import { CookiesProvider, useCookies } from 'react-cookie';
-
-import { Canvas } from "./Canvas";
 import MapWrapper from "./MapWrapper";
-import { NavBar } from "./NavBar";
+import { NavBar } from "./components/NavBar";
 
 // openlayers
 import GeoJSON from 'ol/format/GeoJSON'
+import {
+  fetchBleDevicesNames, getBleDevicesNames, fetchBleData, fetchGpsDevicesNames,
+  fetchGpsData, isDataFetched, getGpsDevicesNames, getBleData, getGpsData
+} from "./services/dataService";
+import Ble from "./components/Ble";
 
-var trilat = require("trilat");
-
-
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyBrzfiHgu_LZGq9qniVyxOp5rf7ZqQsOgA",
-  authDomain: "discretesystems-fbef2.firebaseapp.com",
-  projectId: "discretesystems-fbef2",
-  storageBucket: "discretesystems-fbef2.appspot.com",
-  messagingSenderId: "355100286047",
-  appId: "1:355100286047:web:e7a06fd14996ad7d730fea",
-  measurementId: "G-EJJVYYDEY5",
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-const db = getFirestore(app);
-
-function onlyUnique(value, index, self) {
-  return self.indexOf(value) === index;
-}
-
-async function readData() {
-  // const querySnapshot = await getDocs(collection(db, "Devices"));
-  const docGps = await getDoc(doc(db, "Devices", "GPS"));
-  const docBle = await getDoc(doc(db, "Devices", "Bluetooth"));
-
-
-  // const arrayGps = [];
-  // docGps.forEach((el) => {
-  //   arrayGps.push(el.data());
-  //   console.log(el.data());
-  // });
-
-
-  // docGps.getCollections().then((collections) => {
-  //   collections.forEach((collection) => {
-  //     console.log(`Found subcollection with id: ${collection.id}`);
-  //   });
-  // });
-
-  const arrayBle = [];
-  // docBle.forEach((el) => {
-  //   arrayBle.push(el.data());
-  //   console.log(el.data());
-  // });
-
-
-  let i = 1;
-  let points = [];
-
-  arrayBle.forEach((doc) => {
-    if (points.length < i) {
-      points.push([]);
-    }
-    points[i - 1].push(doc);
-    if (
-      points[i - 1].map((doc) => doc.beaconID).filter(onlyUnique).length >= 3
-    ) {
-      i++;
-    }
-  });
-
-  let points2 = points.filter((doc) => doc.length > 2);
-
-  // let last = points2[points2.length - 1];
-  // console.log(last);
-  // if (last.filter(onlyUnique).length < 3) {
-  points2.pop();
-  // }
-
-  let result = points2.map((point) => {
-    // console.log(trilat(meanPoint(point)));
-    return trilat(meanPoint(point));
-  });
-
-  return result.filter(
-    (doc) => doc[0] > 0 && doc[1] > 0 && doc[0] < 10 && doc[1] < 10
-  );
-}
-
-let meanPoint = (beaconData) => {
-  if (beaconData == null) {
-    return null;
-  }
-
-  let p = [];
-
-  let beacons = beaconData.map((doc) => doc.beaconID).filter(onlyUnique);
-
-  beacons.forEach((beacon) => {
-    p.push(beaconData.filter((doc) => doc.beaconID == beacon));
-  });
-
-  let mean = [];
-
-  p.forEach((beacon) => {
-    mean.push(
-      [
-        parseFloat(beacon[0].x),
-        parseFloat(beacon[0].y),
-        beacon.reduce((total, next) => total + next.meters, 0) / beacon.length,
-      ]
-      //   {
-      //   x: parseFloat(beacon[0].x),
-      //   y: parseFloat(beacon[0].y),
-      //   distance:
-      //     beacon.reduce((total, next) => total + next.meters, 0) / beacon.length,
-      // }
-    );
-  });
-
-  return mean;
-
-  // beaconData.filter;
-};
 
 function App() {
   const [flag, setFlag] = React.useState(false);
-  const data = useRef();
+
+  const [selectedDevice, setSelectedDevice] = useState();
+  const [refreshData, setRefreshData] = useState(false);
+
+  const bleDevices = useRef();
+  const gpsDevices = useRef();
+  const bleData = useRef();
+  const gpsData = useRef();
+
+
   // set intial state
   const [features, setFeatures] = useState([]);
   const [mapView, setMapView] = useState(true);
 
-  const changeViewClick = () => {
-    setMapView(!mapView);
-  }
 
-  readData().then((d) => {
-    data.current = d;
-    setFlag(true);
-  });
+  useEffect(() => {
+    if (isDataFetched() && !refreshData) {
+      bleDevices.current = getBleDevicesNames();
+      gpsDevices.current = getGpsDevicesNames();
+      bleData.current = getBleData();
+      gpsData.current = getGpsData();
+      setFlag(true);
+      setSelectedDevice(bleDevices.current[0]);
+    } else {
+      fetchBleDevicesNames()
+        .then((devices) => {
+          bleDevices.current = devices;
+        })
+        .then(() => { fetchBleData(bleDevices.current).then((data) => bleData.current = data) });
+      fetchGpsDevicesNames()
+        .then((devices) => {
+          gpsDevices.current = devices;
+        })
+        .then(() => { fetchGpsData(gpsDevices.current).then((data) => gpsData.current = data) })
+        .then(() => {
+          setFlag(true);
+          setSelectedDevice(bleDevices.current[0]);
+        });
+      setRefreshData(false);
+    }
+  }, [refreshData])
+
+
 
   // initialization - retrieve GeoJSON features from Mock JSON API get features from mock 
   //  GeoJson API (read from flat .json file in public directory)
@@ -189,23 +93,25 @@ function App() {
 
   console.log("Features passed to map: ", features);
   return (
-    <CookiesProvider>
-      <div className="App">
-        <NavBar changeViewHandler={changeViewClick} />
+    <div className="App">
+      <NavBar
+        changeViewHandler={() => setMapView(!mapView)}
+        refreshDataHandler={() => setRefreshData(true)}
+        deviceChangeHandler={(e) => setSelectedDevice(e.target.value)}
+        devices={bleDevices.current} />
 
+      {!mapView &&
+        <Ble
+          data={bleData.current[selectedDevice]}>
+        </Ble>}
 
-        {!mapView && <Canvas
-          data={data.current}
-        ></Canvas>}
-
-        {mapView && <div style={{ height: '90vh' }}>
+      {mapView &&
+        <div style={{ height: '90vh' }}>
           <MapWrapper
-            features={features}></MapWrapper>
+            features={features}>
+          </MapWrapper>
         </div>}
-
-      </div>
-    </CookiesProvider>
-
+    </div>
   );
 }
 
