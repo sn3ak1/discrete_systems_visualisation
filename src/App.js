@@ -22,10 +22,10 @@ function App() {
   const [selectedDevice, setSelectedDevice] = useState();
   const [refreshData, setRefreshData] = useState(false);
 
-  const bleDevices = useRef();
-  const gpsDevices = useRef();
-  const bleData = useRef();
-  const gpsData = useRef();
+  const [bleDevices, setBleDevices] = useState();
+  const [gpsDevices, setGpsDevices] = useState();
+  const [bleData, setBleData] = useState();
+  const [gpsData, setGpsData] = useState();
 
 
   // set intial state
@@ -35,26 +35,30 @@ function App() {
 
   useEffect(() => {
     if (isDataFetched() && !refreshData) {
-      bleDevices.current = getBleDevicesNames();
-      gpsDevices.current = getGpsDevicesNames();
-      bleData.current = getBleData();
-      gpsData.current = getGpsData();
+      const bleDevices = getBleDevicesNames();
+      setBleDevices(bleDevices);
+      setGpsDevices(getGpsDevicesNames());
+      setBleData(getBleData());
+      setGpsData(getGpsData());
+
       setFlag(true);
-      setSelectedDevice(bleDevices.current[0]);
+      setSelectedDevice(bleDevices[0]);
     } else {
       fetchBleDevicesNames()
         .then((devices) => {
-          bleDevices.current = devices;
+          setBleDevices(devices);
+          return devices;
         })
-        .then(() => { fetchBleData(bleDevices.current).then((data) => bleData.current = data) });
+        .then((devices) => { fetchBleData(devices).then((data) => setBleData(data)) });
       fetchGpsDevicesNames()
         .then((devices) => {
-          gpsDevices.current = devices;
+          setGpsDevices(devices)
+          return devices;
         })
-        .then(() => { fetchGpsData(gpsDevices.current).then((data) => gpsData.current = data) })
+        .then((devices) => { fetchGpsData(devices).then((data) => setGpsData(data)) })
         .then(() => {
           setFlag(true);
-          setSelectedDevice(bleDevices.current[0]);
+          setSelectedDevice(bleDevices[0]);
         });
       setRefreshData(false);
     }
@@ -65,24 +69,24 @@ function App() {
   // initialization - retrieve GeoJSON features from Mock JSON API get features from mock 
   //  GeoJson API (read from flat .json file in public directory)
   useEffect(() => {
-    const fetchData = async () => { 
+    const fetchData = async () => {
       await fetch('./mock-geojson-api.json')
-      .then(response => response.json() )
-      .then((fetchedFeatures) => {
+        .then(response => response.json())
+        .then((fetchedFeatures) => {
 
-        // parse fetched geojson into OpenLayers features
-        //  use options to convert feature from EPSG:4326 to EPSG:3857
-        const wktOptions = {
-          dataProjection: 'EPSG:4326',
-          featureProjection: 'EPSG:3857'
-        }
-        const parsedFeatures = new GeoJSON().readFeatures(fetchedFeatures, wktOptions)
+          // parse fetched geojson into OpenLayers features
+          //  use options to convert feature from EPSG:4326 to EPSG:3857
+          const wktOptions = {
+            dataProjection: 'EPSG:4326',
+            featureProjection: 'EPSG:3857'
+          }
+          const parsedFeatures = new GeoJSON().readFeatures(fetchedFeatures, wktOptions)
 
-        // set features into state (which will be passed into OpenLayers
-        //  map component as props)
-        setFeatures(parsedFeatures)
-        console.log("Fetched features!", parsedFeatures)
-      });
+          // set features into state (which will be passed into OpenLayers
+          //  map component as props)
+          setFeatures(parsedFeatures)
+          console.log("Fetched features!", parsedFeatures)
+        });
     }
     fetchData();
   }, [])
@@ -98,11 +102,11 @@ function App() {
         changeViewHandler={() => setMapView(!mapView)}
         refreshDataHandler={() => setRefreshData(true)}
         deviceChangeHandler={(e) => setSelectedDevice(e.target.value)}
-        devices={bleDevices.current} />
+        devices={bleDevices} />
 
       {!mapView &&
         <Ble
-          data={bleData.current[selectedDevice]}>
+          data={bleData[selectedDevice]}>
         </Ble>}
 
       {mapView &&

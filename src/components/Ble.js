@@ -1,14 +1,19 @@
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Canvas } from './Canvas';
 var trilat = require("trilat");
 
 function Ble({ data }) {
-    const dataProcessed = useRef(readBLEData(data));
+    const [dataProcessed, setDataProcessed] = useState();
+
+    useEffect(() => {
+        setDataProcessed(readBLEData(data));
+    }, [data]);
+
 
     return (
-        // <Canvas data={dataProcessed.current}></Canvas>
-        // TODO swap mock data
-        <Canvas data={[[1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7], [8, 8], [9, 9], [10, 10]]}></Canvas>
+        <>
+            {dataProcessed && <Canvas data={dataProcessed}></Canvas>}
+        </>
     );
 }
 
