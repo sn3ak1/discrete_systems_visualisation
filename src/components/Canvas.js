@@ -31,14 +31,14 @@ export function Canvas({ data }) {
     canvas.current.width = 1000;
     canvas.current.height = 1000;
 
-    rainbow.setNumberRange(0, data.length);
+    rainbow.setNumberRange(0, data?.length);
     rainbow.setSpectrum('blue', 'red');
   }, []);
 
   useEffect(() => {
     setValue(0);
     setSliderTouched(false);
-    slider.current.max = data.length;
+    slider.current.max = data?.length;
   }, [data]);
 
   useEffect(() => {
@@ -48,7 +48,7 @@ export function Canvas({ data }) {
 
     autoDraw.current = setInterval(() => {
       setValue((value) => {
-        if (sliderTouched || value === data.length) {
+        if (sliderTouched || value === data?.length) {
           return value;
         }
         return value + 1;

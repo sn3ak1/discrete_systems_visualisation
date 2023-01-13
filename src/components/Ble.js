@@ -6,7 +6,7 @@ function Ble({ data }) {
     const [dataProcessed, setDataProcessed] = useState();
 
     useEffect(() => {
-        setDataProcessed(readBLEData(data));
+        setDataProcessed(data ? readBLEData(data) : null);
     }, [data]);
 
 
