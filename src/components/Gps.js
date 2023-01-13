@@ -9,15 +9,15 @@ function Gps({ data }) {
     const [timeThreshold, setTimeThreshold] = useState(5000); // miliseconds
     const [accuracyThreshold, setAccuracyThreshold] = useState(6.0); // meters
 
-    useEffect(()=>{
+    useEffect(() => {
         setDataProccesed(dataToFeatures(data, timeThreshold, accuracyThreshold));
-    },[data])
+    }, [data])
 
     return (<>
         {dataProcessed &&
-        <MapWrapper
-            features={ dataProcessed }>
-        </MapWrapper>}</>
+            <MapWrapper
+                features={dataProcessed}>
+            </MapWrapper>}</>
     );
 }
 
@@ -28,15 +28,14 @@ function dataToFeatures(data, timeThreshold, accuracyThreshold) {
     }
 
     // sort data by time ascending
-    data.sort(function(gpsData1, gpsData2){return gpsData1.time - gpsData2.time});
+    data.sort(function (gpsData1, gpsData2) { return gpsData1.time - gpsData2.time });
 
-    console.log("Parsing data to features: ", data)
-    
+
     let features = []
     let linesCoordinates = [[]]
 
     // create lines
-    for (let idx = 0; idx < data.length-1; idx++) {
+    for (let idx = 0; idx < data.length - 1; idx++) {
         const currGpsData = data[idx];
 
         // if gps readout was less accurate than threshold value
@@ -47,23 +46,22 @@ function dataToFeatures(data, timeThreshold, accuracyThreshold) {
         }
 
         // calculate time difference between gps data reads
-        let timeDiff = 0;  
+        let timeDiff = 0;
         if (idx > 0) {
-            timeDiff = Math.abs(currGpsData.time - data[idx-1].time)
+            timeDiff = Math.abs(currGpsData.time - data[idx - 1].time)
         }
 
         // if time difference between data reads exceeded time threshold
         // and at least two points are in coordinares list already
-        if (timeDiff > timeThreshold && linesCoordinates[linesCoordinates.length-1].length >= 2) {
+        if (timeDiff > timeThreshold && linesCoordinates[linesCoordinates.length - 1].length >= 2) {
             // create new line for gps data separated by time than timeThreshold 
             linesCoordinates.push([])
         }
 
         // get curr last coordinates list
-        linesCoordinates[linesCoordinates.length-1].push([currGpsData.x, currGpsData.y])
+        linesCoordinates[linesCoordinates.length - 1].push([currGpsData.x, currGpsData.y])
     }
 
-    console.log("Lines: ", linesCoordinates)
 
     linesCoordinates.forEach((coordinates) => {
         features.push(
@@ -71,10 +69,10 @@ function dataToFeatures(data, timeThreshold, accuracyThreshold) {
                 "type": "Feature",
                 "properties": {},
                 "geometry": {
-                  "coordinates": coordinates,
-                  "type": "LineString"
+                    "coordinates": coordinates,
+                    "type": "LineString"
                 }
-              }
+            }
         )
     })
 
@@ -88,7 +86,6 @@ function dataToFeatures(data, timeThreshold, accuracyThreshold) {
         "type": "FeatureCollection",
         "features": features
     }, wktOptions)
-    console.log("Parsed Features from data: ", parsedFeatures)
     return parsedFeatures
 }
 

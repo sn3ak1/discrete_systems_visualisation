@@ -93,7 +93,6 @@ export function Canvas({ data, dimentions }) {
         max={data.length}
         value={value}
         onChange={(event, value) => {
-          console.log(event);
           if (event?.type === 'mousedown' || event?.type === 'touchstart') {
             setSliderTouched(true);
           }

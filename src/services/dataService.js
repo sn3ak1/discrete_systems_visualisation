@@ -39,7 +39,6 @@ async function getData(deviceType, devices) {
         });
         data[device] = timestamps;
     }
-    // console.log(data);
     return data;
 }
 
@@ -52,7 +51,6 @@ export async function fetchBleData(devices) {
 export async function fetchGpsData(devices) {
     const data = await getData("GPS", devices);
     localStorage.setItem("GPS", JSON.stringify(data));
-    console.log("GPS data fetched from db:", data);
     return data;
 }
 
@@ -74,10 +72,8 @@ export function getBleData() {
 
 export function isDataFetched() {
     if (getGpsDevicesNames() == null) {
-        console.log("GPS devices not fetched");
         return false;
     } else {
-        console.log("GPS devices fetched");
         return true;
     }
 }

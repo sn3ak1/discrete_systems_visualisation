@@ -68,7 +68,6 @@ function App() {
   }
 
   return (
-    console.log('render',gpsData),
     <div className="App">
       <NavBar
         changeViewHandler={() => setMapView(!mapView)}

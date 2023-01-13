@@ -44,7 +44,6 @@ function readBLEData(bleData) {
 
         let beacons = beaconData.map((doc) => doc.beaconID).filter(onlyUnique);
 
-        console.log(beacons);
 
         beacons.forEach((beacon) => {
             p.push(beaconData.filter((doc) => doc.beaconID == beacon));
@@ -79,7 +78,6 @@ function readBLEData(bleData) {
         }
     });
 
-    console.log('points', points)
 
     let points2 = points.filter((doc) => doc.length > 2);
     points2.pop();

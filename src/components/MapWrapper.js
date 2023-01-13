@@ -19,7 +19,7 @@ import SourceStamen from 'ol/source/Stamen';
 import { transform } from 'ol/proj'
 import { toStringXY } from 'ol/coordinate';
 import { forOfStatement, tryStatement } from '@babel/types';
-import {OverviewMap, ZoomToExtent, defaults as defaultControls} from 'ol/control.js';
+import { OverviewMap, ZoomToExtent, defaults as defaultControls } from 'ol/control.js';
 
 import LayerSwitcherImage from 'ol-ext/control/LayerSwitcherImage'
 
@@ -43,35 +43,34 @@ function MapWrapper(props) {
 
   // set intial state - used to track references to OpenLayers 
   //  objects for use in hooks, event handlers, etc.
-  
+
   function gpsTraceLineStyleFunction(f) {
     return new FlowLine({
       visible: false,
-        lineCap: 'round',
-        color: (f, step) => {
-          return [255*step, 64*step, 255-255*step]
-        },
-        width: 5,
-        geometry: function (f) {
-          if (f.getGeometry().getType() === 'MultiLineString') {
-            return f.getGeometry().getLineString(0);
-          } else {
-            return f.getGeometry();
-          }
+      lineCap: 'round',
+      color: (f, step) => {
+        return [255 * step, 64 * step, 255 - 255 * step]
+      },
+      width: 5,
+      geometry: function (f) {
+        if (f.getGeometry().getType() === 'MultiLineString') {
+          return f.getGeometry().getLineString(0);
+        } else {
+          return f.getGeometry();
         }
+      }
     });
   }
 
   // initialize map on first render - logic formerly put into componentDidMount
   useEffect(() => {
-    console.log("Running MapWraper initialization")
 
     const initalFeaturesLayer = new VectorLayer({
       visible: true,
       title: "Features Layer",
       source: new VectorSource({
-          projection: 'EPSG:3857',          
-          format: new GeoJSON(),
+        projection: 'EPSG:3857',
+        format: new GeoJSON(),
       }),
       style: gpsTraceLineStyleFunction
     })
@@ -80,13 +79,13 @@ function MapWrapper(props) {
       visible: true,
       title: "User position Layer",
       source: new VectorSource({
-          projection: 'EPSG:3857',          
-          format: new GeoJSON(),
+        projection: 'EPSG:3857',
+        format: new GeoJSON(),
       }),
       style: new Style({
         image: new Icon({
           offsetOrigin: 'bottom-right',
-          anchor: [0.5, 15],          
+          anchor: [0.5, 15],
           scale: 4,
           opacity: 0.80,
           anchorXUnits: 'fraction',
@@ -96,14 +95,14 @@ function MapWrapper(props) {
         })
       })
     })
-  
+
     const osm = new TileLayer({
       title: 'OSM',
       type: 'base',
       visible: true,
       source: new OSM()
     });
-  
+
     const watercolor = new TileLayer({
       title: 'Water color',
       type: 'base',
@@ -112,7 +111,7 @@ function MapWrapper(props) {
         layer: 'watercolor'
       })
     });
-  
+
     // create map
     const initialMap = new Map({
       target: mapElement.current,
@@ -123,7 +122,7 @@ function MapWrapper(props) {
         projection: 'EPSG:3857',
         center: transform(
           [
-            0,0
+            0, 0
           ],
           'EPSG:4326',
           'EPSG:3857'
@@ -139,7 +138,7 @@ function MapWrapper(props) {
         new OverviewMap({
           layers: [
             new TileLayer({
-              title: 'Open Street Map',            
+              title: 'Open Street Map',
               type: 'base',
               source: new OSM(),
             }),
@@ -157,12 +156,10 @@ function MapWrapper(props) {
   // update map if features prop changes - logic formerly put into componentDidUpdate
   useEffect(() => {
     if (props.features.length && featuresLayer != undefined && map != undefined) { // may be empty on first render
-      
-      let line = props.features[props.features.length-1].getGeometry()
+
+      let line = props.features[props.features.length - 1].getGeometry()
       const newZoomPoint = line.flatCoordinates.slice(-1 * line.stride)
 
-      console.log("Map received features: ", props.features);
-      console.log("Last point in line (Last registered User position - marker position): ", newZoomPoint)
 
       // set features to map
       featuresLayer.setSource(
@@ -185,7 +182,7 @@ function MapWrapper(props) {
           format: new GeoJSON()
         })
       )
-      
+
 
       // set new map center
       map.getView().setCenter(transform(
