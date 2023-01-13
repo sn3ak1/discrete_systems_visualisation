@@ -57,7 +57,7 @@ function App() {
         .then((devices) => { fetchGpsData(devices).then((data) => setGpsData(data)) })
         .then(() => {
           setFlag(true);
-          setSelectedDevice(bleDevices[0]);
+          setSelectedDevice(gpsDevices[0]);
         });
       setRefreshData(false);
     }

@@ -4,17 +4,30 @@ var trilat = require("trilat");
 
 function Ble({ data }) {
     const [dataProcessed, setDataProcessed] = useState();
+    const [dimentions, setDimentions] = useState();
 
     useEffect(() => {
         setDataProcessed(data ? readBLEData(data) : null);
+        setDimentions(data ? getRoomDimensions(data) : null);
     }, [data]);
 
 
     return (
         <>
-            {dataProcessed && <Canvas data={dataProcessed}></Canvas>}
+            {dataProcessed &&
+                <Canvas
+                    data={dataProcessed}
+                    dimentions={dimentions}>
+                </Canvas>}
         </>
     );
+}
+
+function getRoomDimensions(data) {
+    return {
+        width: Math.max(...data.map((doc) => doc.x)),
+        height: Math.max(...data.map((doc) => doc.y)),
+    };
 }
 
 function readBLEData(bleData) {
