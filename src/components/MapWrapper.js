@@ -62,20 +62,6 @@ function MapWrapper(props) {
     });
   }
 
-  // map click handler
-  const handleMapClick = (event) => {
-
-    // get clicked coordinate using mapRef to access current React state inside OpenLayers callback
-    //  https://stackoverflow.com/a/60643670
-    const clickedCoord = mapRef.current.getCoordinateFromPixel(event.pixel);
-
-    // transform coord to EPSG 4326 standard Lat Long
-    const transormedCoord = clickedCoord
-
-    // set React state
-    setSelectedCoord(transormedCoord)
-  }
-
   // initialize map on first render - logic formerly put into componentDidMount
   useEffect(() => {
     console.log("Running MapWraper initialization")
@@ -162,10 +148,6 @@ function MapWrapper(props) {
         new LayerSwitcherImage()
       ]),
     })
-
-    // register map on click callback 
-    initialMap.on('click', handleMapClick)
-
 
     setMap(initialMap)
     setFeaturesLayer(initalFeaturesLayer)
