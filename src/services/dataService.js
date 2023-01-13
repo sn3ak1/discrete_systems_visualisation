@@ -53,6 +53,7 @@ export async function fetchBleData(devices) {
 export async function fetchGpsData(devices) {
     const data = await getData("GPS", devices);
     localStorage.setItem("GPS", JSON.stringify(data));
+    console.log("GPS data fetched from db:", data);
     return data;
 }
 

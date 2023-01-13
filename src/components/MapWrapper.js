@@ -1,3 +1,4 @@
+import geoMarkerIcon from '../graphics/icons/geo-alt-fill.svg';
 import React, { useEffect, useState, useRef } from 'react';
 import styled from "styled-components";
 
@@ -105,7 +106,7 @@ function MapWrapper(props) {
           anchorXUnits: 'fraction',
           anchorYUnits: 'pixels',
           // src: 'https://openlayers.org/en/latest/examples/data/icon.png'
-          src: '../geo-alt-fill.svg'
+          src: geoMarkerIcon
         })
       })
     })
