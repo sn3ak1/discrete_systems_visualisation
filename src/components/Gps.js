@@ -6,7 +6,7 @@ import GeoJSON from 'ol/format/GeoJSON'
 function Gps({ data }) {
     const [dataProcessed, setDataProccesed] = useState();
     // define time threshold
-    const [timeThreshold, setTimeThreshold] = useState(3000);
+    const [timeThreshold, setTimeThreshold] = useState(5000); // miliseconds
     useEffect(()=>{
         setDataProccesed(dataToFeatures(data, timeThreshold));
     },[data])
@@ -44,7 +44,8 @@ function dataToFeatures(data, timeThreshold) {
         }
 
         // if time difference between data reads exceeded time threshold
-        if (timeDiff > timeThreshold) {
+        // and at least two points are in coordinares list already
+        if (timeDiff > timeThreshold && linesCoordinates[linesCoordinates.length-1].length >= 2) {
             // create new line for gps data separated by time than timeThreshold 
             linesCoordinates.push([])
         }
