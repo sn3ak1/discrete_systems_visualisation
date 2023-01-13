@@ -7,6 +7,9 @@ function Gps({ data }) {
     const [dataProcessed, setDataProccesed] = useState();
     // define time threshold
     const [timeThreshold, setTimeThreshold] = useState(5000); // miliseconds
+    const [accuracyThreshold, setAccuracyThreshold] = useState(5.0); // meters
+
+
     useEffect(()=>{
         setDataProccesed(dataToFeatures(data, timeThreshold));
     },[data])
@@ -36,6 +39,12 @@ function dataToFeatures(data, timeThreshold) {
     // create lines
     for (let idx = 0; idx < data.length-1; idx++) {
         const currGpsData = data[idx];
+
+        // if gps readout was less accurate than threshold value
+        if (currGpsData.accuracy <= accuracyThreshold) {
+            // skip this gps data point/readout (dont include it in line)
+            continue
+        }
 
         // calculate time difference between gps data reads
         let timeDiff = 0;  
