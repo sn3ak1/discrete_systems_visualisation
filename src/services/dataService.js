@@ -4,27 +4,26 @@ import { getFirestore, getCollections } from "firebase/firestore";
 import { collection, doc, setDoc, getDoc, getDocs } from "firebase/firestore";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyBrzfiHgu_LZGq9qniVyxOp5rf7ZqQsOgA",
-    authDomain: "discretesystems-fbef2.firebaseapp.com",
-    projectId: "discretesystems-fbef2",
-    storageBucket: "discretesystems-fbef2.appspot.com",
-    messagingSenderId: "355100286047",
-    appId: "1:355100286047:web:e7a06fd14996ad7d730fea",
-    measurementId: "G-EJJVYYDEY5",
-};
+    apiKey: "AIzaSyDkGkuaI5rVYUBdr4zPJW7D7cBKkSJt_o4",
+    authDomain: "discrete2-8b6a7.firebaseapp.com",
+    projectId: "discrete2-8b6a7",
+    storageBucket: "discrete2-8b6a7.appspot.com",
+    messagingSenderId: "900918646172",
+    appId: "1:900918646172:web:fdb0aca4c49496e410e459"
+  };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 export async function fetchGpsDevicesNames() {
-    const docGps = await getDoc(doc(db, "Devices", "GPS"));
+    const docGps = await getDoc(doc(db, "Devices", "devicesGPS"));
     const devicesGps = await docGps.get("devices");
     localStorage.setItem("devicesGps", JSON.stringify(devicesGps));
     return devicesGps;
 }
 
 export async function fetchBleDevicesNames() {
-    const docBle = await getDoc(doc(db, "Devices", "Bluetooth"));
+    const docBle = await getDoc(doc(db, "Devices", "devicesBluetooth"));
     const devicesBle = await docBle.get("devices");
     localStorage.setItem("devicesBle", JSON.stringify(devicesBle));
     return devicesBle;
