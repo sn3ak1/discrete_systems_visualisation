@@ -67,3 +67,7 @@ select {
   cursor: pointer;
   max-height: 50px;
 }
+
+.ble-canvas {
+  transform: rotate(-90deg);
+}
